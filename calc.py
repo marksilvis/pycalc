@@ -1,15 +1,41 @@
 """ Python Calculator
-A simple Python shell application that evaluates calculator input.
+A Python shell application that evaluates calculator input
+Uses plyplus to build grammar and create AST
 
 author - Mark Silvis
 """
 
 import sys, math, re
 from collections import OrderedDict
+import plyplus
+import operator as op
 
 
-class Calculator():
+# build parser grammar
+grammar = plyplus.Grammar("""
+    start: add;
+
+    ?add: ( add addition )? mul;
+    ?mul: ( mul multiplication )? pow;
+    ?pow: ( add power )? atom;
+    @atom: neg | number | '\(' add '\)';
+
+    neg: '-' number;
+    number: '[\d.]+';
+    addition: '\+' | '-';
+    multiplication: '\*' | '/' | '\%';
+    power: '\^';
+
+    WS: '[\s]+' (%ignore);
+""")
+
+class Calculator(plyplus.STransformer):
     """Calculator"""
+
+    number = lambda self, exp: float(exp.tail[0])
+    neg = lambda self, exp: -exp.tail[0]
+    __default__ = lambda self, exp: exp.tail[0]
+
     def __init__(self):
         super(Calculator, self).__init__()
         self._commands = {'exit': 'close calculator',
@@ -25,10 +51,55 @@ class Calculator():
         self._variables = {}
         self._history = OrderedDict()
 
-    def calculate(self, evalute):
-        pass
+    def verify(self, eval):
+        eval = eval.replace(" ", "")
+        if not self.check_equal_parens(eval):
+            print("Error: Missing parenthesis")
+            return None
+        eval = self.check_for_variables(eval)
+        if eval == None:
+            print("Error: Invalid identifier")
+            return None
+        return eval
+
+    def _evaluate(self, tree):
+        term1, operator, term2 = tree.tail
+        operation = { '+': op.add, '-': op.sub, '*': op.mul, '/': op.truediv, '%': op.mod, '^': op.pow }[operator]
+
+        return operation(term1, term2)
+
+    pow = _evaluate
+    add = _evaluate
+    mul = _evaluate
+
+    def calculate(self, eval):
+        tree = grammar.parse(eval)
+        answer = self.transform(tree)
+        return answer
 
     """ Helper methods """
+    def check_for_variables(self, eval):
+        valid_identifiers = "[A-Za-z_][A-Za-z_0-9]*"
+        identifiers = re.findall(valid_identifiers, eval)
+        for i in identifiers:
+            #if i == 'ans' and self._constants[i] == None:
+             #   return None
+            if i in self._constants:
+                eval = eval.replace(i, str(self._constants[i]))
+            elif i in self._variables:
+                eval = eval.replace(i, str(self._variables[i]))
+            else:
+                return None
+        return eval
+
+    def check_equal_parens(self, eval):
+        lparen = eval.count('(')
+        rparen = eval.count(')')
+        if lparen == rparen:
+            return True
+        else:
+            return False
+
     # setters
     def set_answer(self, answer):
         """Set answer to that of previous calculation
@@ -47,7 +118,7 @@ class Calculator():
         """
         if not key.isidentifier():
             return "Error: Variable must begin with a letter"
-        elif not re.match("[/^\d*\.?\d*$/]", value):    # variable value may be integer or decimal
+        elif re.search("[A-Za-z_\s]", value):    # variable value may be integer or decimal
             return "Error: Value must be an integer or decimal"
         elif key in self._commands:
             return "Error: Cannot overwrite command"
@@ -104,7 +175,6 @@ class Calculator():
         """Get all calculator commands"""
         commands = "\n".join("{0}: {1}".format(i, self._commands[i]) for i in sorted(self._commands))
         return commands            
-
 
 def main():    
     calc = Calculator()
@@ -180,13 +250,19 @@ def main():
 
         # calculate
         else:
-            answer = calc.calculate(evaluate)
-            print("= {0}".format(answer))
-            print()
+            try:
+                eval = calc.verify(string)
+                answer = calc.calculate(eval)
+                print("= {0}".format(answer))
+                # save answer and add to history
+                calc.add_to_history(string, answer)
+                calc.set_answer(answer)
+            except plyplus.plyplus.ParseError:
+                print("Error: invalid input")
+            except plyplus.plyplus.TokenizeError:
+                print("Errr: invalid input")
 
-            # save answer and add to history
-            calc.add_to_history(string, answer)
-            calc.set_answer(answer)
+            print()
 
     sys.exit()
 
