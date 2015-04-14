@@ -1,5 +1,5 @@
 """ Python Calculator
-A simple Python application that evaluates calculator input.
+A simple Python shell application that evaluates calculator input.
 
 author - Mark Silvis
 """
@@ -31,14 +31,24 @@ class Calculator():
     """ Helper methods """
     # setters
     def set_answer(self, answer):
-        """Set answer to answer of previous calculation"""
+        """Set answer to that of previous calculation
+
+        args:
+        answer -- answer to most recent calculation
+        """
         self._constants['ans'] = answer
 
     def set_variable(self, key, value):
+        """Save a variable
+
+        args:
+        key -- variable name
+        value -- variable value
+        """
         if not key.isidentifier():
             return "Error: Variable must begin with a letter"
-        elif not re.match("[/^\d*\.?\d*$/]", value):
-            return "Error: Value must be a number"
+        elif not re.match("[/^\d*\.?\d*$/]", value):    # variable value may be integer or decimal
+            return "Error: Value must be an integer or decimal"
         elif key in self._commands:
             return "Error: Cannot overwrite command"
         elif key in self._constants:
@@ -54,7 +64,6 @@ class Calculator():
         line -- user input
         ans  -- answer to calculation
         """
-
         self._history[line] = ans
 
     # getters
@@ -95,6 +104,7 @@ class Calculator():
         """Get all calculator commands"""
         commands = "\n".join("{0}: {1}".format(i, self._commands[i]) for i in sorted(self._commands))
         return commands            
+
 
 def main():    
     calc = Calculator()
@@ -154,8 +164,7 @@ def main():
         elif command == "help":
             help = calc.get_commands()
             print(help)
-            if len(help) > 0:
-                print()
+            print()
 
         # save a variable
         elif command == "var":
