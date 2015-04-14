@@ -251,5 +251,14 @@ class CalcTests(unittest.TestCase):
         answer = self.calc.calculate(eval)
         self.assertEqual(answer, expected)
 
+    def testCalculateReturnsCorrectVeryComplex(self):
+        """Ensures calculation is correct with very complex calculation"""
+        self.calc.set_variable('onehalf', '1/2')
+        eval = '(1000-((20*onehalf)^2)/8) + onehalf*20-4*8'
+        eval = self.calc.verify(eval)
+        expected = 965.5
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
+
 if __name__ == '__main__':
     unittest.main()
