@@ -1,5 +1,5 @@
 import unittest
-import math
+import math, sys
 from calc import Calculator
 
 class CalcTests(unittest.TestCase):
@@ -102,6 +102,14 @@ class CalcTests(unittest.TestCase):
         actual = self.calc.set_variable('five', 'X')
         self.assertEqual(actual, expected)
 
+    def testSetVariableInvalidValueLong(self):
+        """Ensures only a valid value may be added (integer or decimal)
+        Tests for previous error of allowing very long strings
+        """
+        expected = "Error: Value must be an integer or decimal"
+        actual = self.calc.set_variable('t', '9324u2389423723742384')
+        self.assertEqual(actual, expected)
+
     def testSetVariableNoCommandOverride(self):
         """Ensures set_variable does not override commands"""
         self.calc.set_variable('help', '5')
@@ -135,16 +143,65 @@ class CalcTests(unittest.TestCase):
         constants = self.calc.get_constants()
         self.assertEqual(constants, expected)
 
-    def testCalculateAnswer(self):
-        """Ensures calculation is correct"""
-        ans = self.calc.calculate("2+2")
-        self.assertEqual(ans, '4')
+    def testCheckForVariablesDoesNotExist(self):
+        """If input contains a variable or constant, it replaces it with its value
+        Ensures that, if the variable doesn't exist, it fails
+        """
+        eval = "hello"
+        expected = None
+        actual = self.calc.check_for_variables(eval)
+        self.assertEqual(actual, expected)
 
-    def testTokenize(self):
-        """Ensures input is tokenized correctly"""
-        string = "3+2*((10-7)^2)/3"
-        tokens = self.calc.tokenize(string)
-        self.fail()
+    def testCheckForVariablesValidVariable(self):
+        """If input contains a variable, it should be replaced with its value
+        Ensures that, if the variable exists, it is replaced
+        """
+        var = "x"
+        self.calc.set_variable(var, '5')
+        result = self.calc.check_for_variables(var)
+        self.assertEqual(result, '5')
+
+    def testCheckForVariableValidConstant(self):
+        """Ensures that constants are replaced with their appropriate value"""
+        eval = 'pi'
+        result = self.calc.check_for_variables(eval)
+        self.assertEqual(result, str(math.pi))
+
+    def testCheckForVariableValidAnswer(self):
+        """Ensures the previous answer constant is added"""
+        self.calc.set_answer('5')
+        result = self.calc.check_for_variables('ans')
+        self.assertEqual(result, '5')
+
+    def testCheckEqualParensEqual(self):
+        """Ensures method returns true when input has equal number of left and right parentheses"""
+        eval = '((2))'
+        result = self.calc.check_equal_parens(eval)
+        self.assertTrue(result)
+
+    def testCheckEqualParensNotEqual(self):
+        """Ensures method returns false when input has inequal number of left and right parentheses"""
+        eval = '(((2))'
+        result = self.calc.check_equal_parens(eval)
+        self.assertFalse(result)
+
+    def testCalculateReturnsCorrectAdd(self):
+        """Ensures calculation is correct for addition"""
+        eval = "2+2"
+        expected = 4.0
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
+
+    def testCalculateReturnsCorrectSub(self):
+        """Ensures calculation is correct for subtraction"""
+        eval = '2-2'
+        expected = 0.0
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
 
 if __name__ == '__main__':
-    unittest.main()
+    log_file = 'test_log.txt'
+    file = open(log_file, 'w')
+    runner = unittest.TextTestRunner(file)
+    unittest.main(testRunner=runner)
+    file.close()

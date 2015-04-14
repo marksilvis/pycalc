@@ -1,0 +1,67 @@
+python3 -m unittest calc_tests.py
+...........................
+----------------------------------------------------------------------
+Ran 27 tests in 0.004s
+
+OK
+mark@UX31A:~/git/pycalc$ python3 -m unittest calc_tests.py -v
+testAddToHistoryValue (calc_tests.CalcTests)
+Ensures answer is correctly added to history ... ok
+testAddtoHistoryKey (calc_tests.CalcTests)
+Ensures history is correctly added to ... ok
+testCalculateReturnsCorrectAdd (calc_tests.CalcTests)
+Ensures calculation is correct for addition ... ok
+testCalculateReturnsCorrectSub (calc_tests.CalcTests)
+Ensures calculation is correct for subtraction ... ok
+testCheckEqualParensEqual (calc_tests.CalcTests)
+Ensures method returns true when input has equal number of left and right parentheses ... ok
+testCheckEqualParensNotEqual (calc_tests.CalcTests)
+Ensures method returns false when input has inequal number of left and right parentheses ... ok
+testCheckForVariableValidAnswer (calc_tests.CalcTests)
+Ensures the previous answer constant is added ... ok
+testCheckForVariableValidConstant (calc_tests.CalcTests)
+Ensures that constants are replaced with their appropriate value ... ok
+testCheckForVariablesDoesNotExist (calc_tests.CalcTests)
+If input contains a variable or constant, it replaces it with its value ... ok
+testCheckForVariablesValidVariable (calc_tests.CalcTests)
+If input contains a variable, it should be replaced with its value ... ok
+testGetCommands (calc_tests.CalcTests)
+Ensures command list is returned correctly ... ok
+testGetConstants (calc_tests.CalcTests)
+Ensures all constants are returned by get_constants ... ok
+testGetHistoryNoHistory (calc_tests.CalcTests)
+Ensures history is clear when no calculations have been input ... ok
+testGetHistoryWithHistory (calc_tests.CalcTests)
+Ensures history returns correct values when calculations have been input ... ok
+testGetPrevious (calc_tests.CalcTests)
+Ensures get_previous returns last calculation ... ok
+testGetPreviousWithAnswer (calc_tests.CalcTests)
+Ensures get_previous returns the answer to the last calculation when requested ... ok
+testGetVariablesNoVariables (calc_tests.CalcTests)
+Ensures no variables are returned by get_variables if none have been added ... ok
+testGetVariablesWithVariables (calc_tests.CalcTests)
+Ensures all variables are returned by get_variables after variables have been added ... ok
+testSetAnswer (calc_tests.CalcTests)
+Ensures previous answer constant gets set ... ok
+testSetVariable (calc_tests.CalcTests)
+Ensures that variables can be set correctly ... ok
+testSetVariableInvalidKey (calc_tests.CalcTests)
+Ensures only a valid variable may be added (an identifier) ... ok
+testSetVariableInvalidValue (calc_tests.CalcTests)
+Ensures only a valid value may be added (a number, integer or decimal) ... ok
+testSetVariableInvalidValueLong (calc_tests.CalcTests)
+Ensures only a valid value may be added (integer or decimal) ... ok
+testSetVariableKeyInVariablesDict (calc_tests.CalcTests)
+Ensures setting variable adds key to variables dict ... ok
+testSetVariableNoCommandOverride (calc_tests.CalcTests)
+Ensures set_variable does not override commands ... ok
+testSetVariableNoConstantOverride (calc_tests.CalcTests)
+Ensures set_variable does not override constants ... ok
+testSetVariableValueInVariablesDict (calc_tests.CalcTests)
+Ensures setting variable addes value to variables dict ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 0.005s
+
+OK
+

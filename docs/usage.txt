@@ -1,2 +1,2 @@
-Requirements: Python 3
+Requirements: Python 3, plyplus, ply
 Run: python calc.py
