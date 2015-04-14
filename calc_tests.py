@@ -70,7 +70,7 @@ class CalcTests(unittest.TestCase):
         self.assertEqual('2', ans)
 
     def testSetAnswer(self):
-        """Ensures previous answer constant can be set"""
+        """Ensures previous answer constant gets set"""
         self.calc.set_answer('5')
         self.assertEqual(self.calc._constants['ans'], '5')
 
