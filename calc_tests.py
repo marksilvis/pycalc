@@ -1,5 +1,4 @@
-import unittest, sys
-import unittest.mock
+import unittest
 import math
 from calc import Calculator
 
