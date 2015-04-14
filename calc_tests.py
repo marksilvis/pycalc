@@ -98,7 +98,7 @@ class CalcTests(unittest.TestCase):
 
     def testSetVariableInvalidValue(self):
         """Ensures only a valid value may be added (a number, integer or decimal)"""
-        expected = "Error: Value must be a number"
+        expected = "Error: Value must be an integer or decimal"
         actual = self.calc.set_variable('five', 'X')
         self.assertEqual(actual, expected)
 
@@ -135,6 +135,16 @@ class CalcTests(unittest.TestCase):
         constants = self.calc.get_constants()
         self.assertEqual(constants, expected)
 
+    def testCalculateAnswer(self):
+        """Ensures calculation is correct"""
+        ans = self.calc.calculate("2+2")
+        self.assertEqual(ans, '4')
+
+    def testTokenize(self):
+        """Ensures input is tokenized correctly"""
+        string = "3+2*((10-7)^2)/3"
+        tokens = self.calc.tokenize(string)
+        self.fail()
 
 if __name__ == '__main__':
     unittest.main()
