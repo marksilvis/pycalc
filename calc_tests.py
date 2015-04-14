@@ -199,9 +199,57 @@ class CalcTests(unittest.TestCase):
         answer = self.calc.calculate(eval)
         self.assertEqual(answer, expected)
 
+    def testCalculateReturnsCorrectMult(self):
+        """Ensures calculation is correct for multiplication"""
+        eval = '2*2'
+        expected = 4.0
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
+
+    def testCalculateReturnsCorrectDiv(self):
+        """Ensures calculation is correct for division"""
+        eval = '2/2'
+        expected = 1.0
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
+
+    def testCalculateReturnsCorrectModulo(self):
+        """Ensures calculation is correct for modulus"""
+        eval = '10%2'
+        expected = 0.0
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
+
+    def testCalculateReturnsCorrectPower(self):
+        """Ensures calculation is correct for eponentiation"""
+        eval = '2^2'
+        expected = 4.0
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
+
+    def testCalculateReturnsCorrectComplex(self):
+        """Ensures calculation is correct for a more complex calculation"""
+        eval = '((10^2/2)*5)-300'
+        expected = -50.0
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
+
+    def testCalculateReturnsCorrectConstant(self):
+        """Ensures calculation is correct with constant"""
+        eval = '2*pi'
+        eval = self.calc.verify(eval)
+        expected = 2*math.pi
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
+
+    def testCalculateReturnsCorrectVariable(self):
+        """Ensures calculation is correct with variable"""
+        self.calc.set_variable('five', '5')
+        eval = 'five^2'
+        eval = self.calc.verify(eval)
+        expected = 25.0
+        answer = self.calc.calculate(eval)
+        self.assertEqual(answer, expected)
+
 if __name__ == '__main__':
-    log_file = 'test_log.txt'
-    file = open(log_file, 'w')
-    runner = unittest.TextTestRunner(file)
-    unittest.main(testRunner=runner)
-    file.close()
+    unittest.main()
