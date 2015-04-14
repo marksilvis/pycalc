@@ -20,7 +20,7 @@ grammar = plyplus.Grammar("""
     ?pow: ( add power )? atom;
     @atom: neg | number | '\(' add '\)';
 
-    neg: '-' number;
+    neg: '-' atom;
     number: '[\d.]+';
     addition: '\+' | '-';
     multiplication: '\*' | '/' | '\%';
@@ -31,10 +31,6 @@ grammar = plyplus.Grammar("""
 
 class Calculator(plyplus.STransformer):
     """Calculator"""
-
-    number = lambda self, exp: float(exp.tail[0])
-    neg = lambda self, exp: -exp.tail[0]
-    __default__ = lambda self, exp: exp.tail[0]
 
     def __init__(self):
         super(Calculator, self).__init__()
@@ -52,6 +48,7 @@ class Calculator(plyplus.STransformer):
         self._history = OrderedDict()
 
     def verify(self, eval):
+        """Verify input"""
         eval = eval.replace(" ", "")
         if not self.check_equal_parens(eval):
             print("Error: Missing parenthesis")
@@ -63,27 +60,35 @@ class Calculator(plyplus.STransformer):
         return eval
 
     def _evaluate(self, tree):
+        """Evaluate AST"""
         term1, operator, term2 = tree.tail
         operation = { '+': op.add, '-': op.sub, '*': op.mul, '/': op.truediv, '%': op.mod, '^': op.pow }[operator]
 
         return operation(term1, term2)
 
+    def calculate(self, eval):
+        """Perform calculation"""
+        # build AST
+        tree = grammar.parse(eval)
+        # evaluate tree
+        answer = self.transform(tree)
+        # return answer
+        return answer
+
     pow = _evaluate
     add = _evaluate
     mul = _evaluate
 
-    def calculate(self, eval):
-        tree = grammar.parse(eval)
-        answer = self.transform(tree)
-        return answer
+    number = lambda self, exp: float(exp.tail[0])
+    neg = lambda self, exp: -exp.tail[0]
+    __default__ = lambda self, exp: exp.tail[0]
 
     """ Helper methods """
     def check_for_variables(self, eval):
+        """Replaces variables with their values"""
         valid_identifiers = "[A-Za-z_][A-Za-z_0-9]*"
         identifiers = re.findall(valid_identifiers, eval)
         for i in identifiers:
-            #if i == 'ans' and self._constants[i] == None:
-             #   return None
             if i in self._constants:
                 eval = eval.replace(i, str(self._constants[i]))
             elif i in self._variables:
@@ -93,6 +98,7 @@ class Calculator(plyplus.STransformer):
         return eval
 
     def check_equal_parens(self, eval):
+        """Ensures number of left parentheses and right parentheses are equivalent"""
         lparen = eval.count('(')
         rparen = eval.count(')')
         if lparen == rparen:
@@ -260,7 +266,9 @@ def main():
             except plyplus.plyplus.ParseError:
                 print("Error: invalid input")
             except plyplus.plyplus.TokenizeError:
-                print("Errr: invalid input")
+                print("Error: invalid input")
+            except ValueError:
+                print("Error: invalid input")
 
             print()
 
